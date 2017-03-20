@@ -112,7 +112,7 @@
 		    			<h2>Sign In</h2>
 		    		</div>
     		
-	    			<form class="form-horizontal" action="index.php" method="post">
+	    			<form class="form-horizontal" action="indexx.php" method="post">
 					  <div class="control-group <?php echo !empty($userNameError)?'error':'';?>">
 					    <label class="control-label">User Name</label>
 					    <div class="controls">

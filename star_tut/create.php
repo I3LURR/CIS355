@@ -12,6 +12,9 @@
 		$name = $_POST['name'];
 		$email = $_POST['email'];
 		$mobile = $_POST['mobile'];
+		$date = date('Y-m-d H:i:s');
+		
+		echo $date;
 		
 		// validate input
 		$valid = true;
