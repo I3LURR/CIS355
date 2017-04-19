@@ -1,6 +1,21 @@
 <?php
+
+require 'database.php';
+
 if ( !empty($_POST)) {
-    echo '<img src="change_banner.php?id=svsu2.jpg"/>';
+
+
+    $$id = 'svsu2.jpg';
+
+    $pdo = Databse::connect();
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $sql="select * from Image_tbl where image_name= ?";
+    $q = $pdo->prepare($sql);
+    $q->execute(array($id));
+    $data = $q->fetch(PDO::FETCH_ASSOC);
+    $pdo = Database::disconnect();
+
+    echo '<img  height=5%; width=15%; src="data:image/jpeg;base64,' . base64_encode( $data['image'] ) . '" />';
 }
 
 
@@ -38,7 +53,7 @@ if ( !empty($_POST)) {
             </p>
         </div>
 
-        <form class="form-horizontal" action="images.php" method="post">
+        <form class="form-horizontal" action="images.php" method="POST">
 
             <div class="control-group">
                 <label class="control-label">Image Name to Display</label>

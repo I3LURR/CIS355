@@ -71,7 +71,7 @@ if ( !empty($_POST)) { // if $_POST filled then process the form
         -->
 
         <div class="row">
-            <h3>User Login   <a class="btn btn-primary" href="images.php">Image Stuff</a> </h3>
+            <h3>User Login</h3>
         </div>
 
         <form class="form-horizontal" action="index.php" method="post">

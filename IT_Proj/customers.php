@@ -59,11 +59,11 @@ if ( !empty($_GET['id'])) {
                 echo '<td>'. $row['customer_username'] . '</td>';
                 echo '<td>'. $row['customer_name'] . '</td>';
                 echo '<td>'. $row['customer_phoneNum'] . '</td>';
-                echo '<td width=170>';
+                echo '<td width=230>';
                 echo '<a class="btn btn-info" href="cUpdate.php?id='.$row['customer_id'].'">Update</a>';
                 echo '&nbsp;';
-                //echo '<a class="btn btn-success" href="cInfo?id='.$row['customer_id'].'&userId='.$id. '">Resolve</a>';
-                //echo '&nbsp;';
+                echo '<a class="btn btn-success" href="View.php?id='.$row['customer_id']. '">View</a>';
+                echo '&nbsp;';
                 echo '<a class="btn btn-danger" href="cDelete.php?id='.$row['customer_id'].'&userId='.$id. '">Delete</a>';
                 echo '</td>';
                 echo '</tr>';

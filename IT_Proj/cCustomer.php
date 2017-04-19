@@ -14,12 +14,20 @@ if(!isset($_SESSION["person_id"])){ // if "user" not set,
 		$userNameError = null;
 		$userNameError = null;
 		$mobileError = null;
+		$pictureError = null;
 		
 		// keep track post values
 		$userName = $_POST['username'];
 		$name = $_POST['name'];
 		$mobile = $_POST['mobile'];
-		
+        $fileName = $_FILES['userfile']['name'];
+        $tmpName  = $_FILES['userfile']['tmp_name'];
+        $fileSize = $_FILES['userfile']['size'];
+        $content =  file_get_contents($tmpName);
+
+        echo $fileName . ' ' . $fileSize;
+
+
 		echo $date;
 		
 		// validate input
@@ -38,14 +46,23 @@ if(!isset($_SESSION["person_id"])){ // if "user" not set,
 			$mobileError = 'Please enter Mobile Number';
 			$valid = false;
 		}
-		
+        if($fileSize > 0) {
+        } else {
+            $filename = null;
+            $filesize = null;
+            $filecontent = null;
+            $pictureError = 'improper file type';
+            $valid=false;
+
+        }
+
 		// insert data
 		if ($valid) {
 			$pdo = Database::connect();
 			$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-			$sql = "INSERT INTO Customers_tbl (customer_username,customer_name,customer_phoneNum) values(?, ?, ?)";
+			$sql = "INSERT INTO Customers_tbl (customer_username,customer_name,customer_phoneNum,filename,filesize,filecontent) values(?, ?, ?,?,?,?)";
 			$q = $pdo->prepare($sql);
-			$q->execute(array($userName,$name,$mobile));
+			$q->execute(array($userName,$name,$mobile,$fileName,$fileSize,$content));
 			Database::disconnect();
 			header("Location: customers.php");
 		}
@@ -69,7 +86,7 @@ if(!isset($_SESSION["person_id"])){ // if "user" not set,
 		    			<h3>Create a Customer</h3>
 		    		</div>
     		
-	    			<form class="form-horizontal" action="cCustomer.php" method="post">
+	    			<form class="form-horizontal" action="cCustomer.php" method="post" enctype="multipart/form-data">
 					  <div class="control-group <?php echo !empty($userNameError)?'error':'';?>">
 					    <label class="control-label">User Name</label>
 					    <div class="controls">
@@ -97,6 +114,15 @@ if(!isset($_SESSION["person_id"])){ // if "user" not set,
 					      	<?php endif;?>
 					    </div>
 					  </div>
+
+                        <div class="control-group <?php echo !empty($pictureError)?'error':'';?>">
+                            <label class="control-label">Picture</label>
+                            <div class="controls">
+                                <input type="hidden" name="MAX_FILE_SIZE" value="16000000">
+                                <input name="userfile" type="file" id="userfile">
+                            </div>
+                        </div>
+
 					  <div class="form-actions">
 						  <button type="submit" class="btn btn-success">Create</button>
 						  <a class="btn" href="customers.php">Back</a>
