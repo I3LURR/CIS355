@@ -1,11 +1,17 @@
 <?php
+
+session_start();
+if(!isset($_SESSION["person_id"])){ // if "user" not set,
+    session_destroy();
+    header('Location: index.php');     // go to login page
+    exit;
+}
+
 require 'database.php';
 //This is going to be ther username of the employee that signed in. For when things are resolved
-$id = "";
+$id = $_SESSION["person_title"];
 
-if ( !empty($_GET['id'])) {
-    $id = $_REQUEST['id'];
-}
+
 
 ?>
 
@@ -16,6 +22,7 @@ if ( !empty($_GET['id'])) {
     <meta charset="utf-8">
     <link   href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <link rel="icon" href="img/cardinal_logo.png" type="image/png" />
 </head>
 
 <body>
@@ -25,6 +32,7 @@ if ( !empty($_GET['id'])) {
     </div>
     <div class="row">
         <p>
+            <a href="logout.php" class="btn btn-warning">Logout</a> &nbsp;&nbsp;&nbsp;
             <a href="customer_home.php" class="btn btn-success">Create Problem</a>
             <a href="employee_home.php" class="btn btn-primary">Employee Home</a>
             <a href="customers.php">Customers Page</a>

@@ -1,142 +1,119 @@
-<?php 
-	
-	require 'database.php';
-	
-	if ( !empty($_POST)) {
-		// keep track validation errors
-		$userNameError = null;
-		$userPasswordError = null;
-				
-		// keep track post values
-		$userName = $_POST['userName'];
-		$userPassword = $_POST['userPassword'];
-		
-		// validate input
-		$valid = true;
-		if (empty($userName)) {
-			$userNameError = 'Please enter a User Name';
-			$valid = false;
-		}
-		
-		if (empty($userPassword)) {
-			$userPasswordError = 'Please enter a Password';
-			$valid = false;
-		}
 
-		$blnConnectionSuccess = True;
-		$data = null;
-		if ($valid) {
-			try{
-				$pdo = Database::connect();
-				$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-				$sql = "SELECT users_username, users_password FROM Users_tbl WHERE users_username='" . $userName . "'";
-				$q = $pdo->prepare($sql);
-				$q->execute();
-				$data = $q->fetch(PDO::FETCH_ASSOC);
-				$pdo = Database::disconnect();
-			} catch (PDOException $e) {
-				$userNameError = "Connection failed, I think!";
-				$blnConnectionSuccess = False;
-			}
-		}
-		
-		if ($blnConnectionSuccess) {
-			// Check to make sure there is data
-			if (!$data) {
-				$userNameError = "Please enter a valid userName!";
-			} else {
-				//Check to make sure the password brought back matches the one in input
-				if ($userPassword == $data['users_password']) {
-					header("Location: http://csis.svsu.edu/~tmolear/CIS355/IT_Proj/employee_home.php?id=" .$userName);
-				} else {
-					$userNameError = "Please input a valid password!";
-				}
-			}	
-		}
-		
-	/*	 //check to see if userName/Password is valid
-		$data = null;
-		if($valid) {
-			try {
-			$pdo = Database::connect();
-			$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-			$sql = "SELECT users_username, users_password FROM Users_tbl WHERE users_username='tmolear'";
-			$q = $pdo->prepare($sql);
-			$q->execute();
-			$data = $q->fetch(PDO::FETCH_FIELDS);
-			}	catch (PDOException $e) {
-				$userNameError =  'Connection failed, I think!.';
-				}
-		
-			//If nothing was returned
-			if(!$data) {
-				$userNameError = "Invalid username. Please enter a valid username.";
-			} else {
-				//There is data so lets check the password
-				$row = $data->fetch_assoc();
-				
-				echo $row["users_password"];
-				
-				 if($row["users_password"] = $userPassword) {
-					$data->free();
-					$pdo = Database::disconnect();
-					header("Location: http://csis.svsu.edu/~tmolear/CIS355/IT_Proj/employee_home.php");
-					die();
-				} else {
-					$userPasswordError = " Invalid password. Please enter the correct password.";
-				}	
-				$data->free();
-				$pdo = Database::disconnect(); 
-			}
-			
-			
-	
-		}	*/
-	} 
+<?php
+/* ---------------------------------------------------------------------------
+ * filename    : login.php
+ * author      : Tyler tmolear@svsu.edu from Gpcorser
+ * description : This program logs the user in by setting $_SESSION variables
+ * ---------------------------------------------------------------------------
+ */
+// Start or resume session, and create: $_SESSION[] array
+session_start();
+require 'database.php';
+if ( !empty($_POST)) { // if $_POST filled then process the form
+    // initialize $_POST variables
+    $username = $_POST['username']; // username is email address
+    $password = $_POST['password'];
+    $passwordhash = MD5($password);
+     //echo $password . " " . $passwordhash; //exit();
+    // robot 87b7cb79481f317bde90c116cf36084b
+
+    // verify the username/password
+    $pdo = Database::connect();
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $sql = "SELECT * FROM Users_tbl WHERE users_username = ? AND users_password = ? LIMIT 1";
+    $q = $pdo->prepare($sql);
+    $q->execute(array($username,$passwordhash));
+    $data = $q->fetch(PDO::FETCH_ASSOC);
+
+    if($data) { // if successful login set session variables
+        echo "success!";
+        $_SESSION['person_id'] = $data['users_id'];
+        $sessionid = $data['users_id'];
+        $_SESSION['person_title'] = $data['users_username'];
+        $serssionuser = $data['users_username'];
+        Database::disconnect();
+        header("Location: employee_home.php?id=$serssionuser ");
+        // javascript below is necessary for system to work on github
+        echo "<script type='text/javascript'> document.location = 'employee_home.php'; </script>";
+        exit();
+    }
+   // else { // otherwise go to login error page
+     //   Database::disconnect();
+       // header("Location: login_error.html");
+ //   }
+}
+// if $_POST NOT filled then display login form, below.
 ?>
-
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <link   href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <link   href="css/bootstrap.min.css" rel="stylesheet">
+    <script src="js/bootstrap.min.js"></script>
+    <link rel="icon" href="img/cardinal_logo.png" type="image/png" />
 </head>
 
 <body>
-    <div class="container">
-    
-    			<div class="span10 offset1">
-    				<div class="row">
-		    			<h2>Sign In</h2>
-		    		</div>
-    		
-	    			<form class="form-horizontal" action="indexx.php" method="post">
-					  <div class="control-group <?php echo !empty($userNameError)?'error':'';?>">
-					    <label class="control-label">User Name</label>
-					    <div class="controls">
-					      	<input name="userName" type="text"  placeholder="User Name" value="<?php echo !empty($userName)?$userName:'';?>">
-					      	<?php if (!empty($userNameError)): ?>
-					      		<span class="help-inline"><?php echo $userNameError;?></span>
-					      	<?php endif; ?>
-					    </div>
-					  </div>
-					  <div class="control-group <?php echo !empty($userPassword)?'error':'';?>">
-					    <label class="control-label">User Name</label>
-					    <div class="controls">
-					      	<input name="userPassword" type="password" placeholder="Password" value="<?php echo !empty($userPassword)?$userPassword:'';?>">
-					      	<?php if (!empty($userPasswordError)): ?>
-					      		<span class="help-inline"><?php echo $userPasswordError;?></span>
-					      	<?php endif;?>
-					    </div>
-					  </div>
-					  <div class="form-actions">
-					  	<button type="submit" class="btn btn-success">Sign In</button>
-					  </div>
-					</form>
-				</div>
-				
-    </div> <!-- /container -->
-  </body>
+<div class="container">
+
+    <div class="span10 offset1">
+
+        <div class="row">
+            <img src="img/svsulogo.png" />
+        </div>
+
+        <!--
+        <div class="row">
+            <br />
+            <p style="color: red;">System temporarily unavailable.</p>
+        </div>
+        -->
+
+        <div class="row">
+            <h3>User Login   <a class="btn btn-primary" href="images.php">Image Stuff</a> </h3>
+        </div>
+
+        <form class="form-horizontal" action="index.php" method="post">
+
+            <div class="control-group">
+                <label class="control-label">Username</label>
+                <div class="controls">
+                    <input name="username" type="text"  placeholder="gpcorser" required>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label">Password</label>
+                <div class="controls">
+                    <input name="password" type="password" placeholder="not your SVSU password, please" required>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-success">Sign in</button>
+                <a class="btn btn-primary" href="cUser.php">Join (New User)</a>
+            </div>
+
+            <p><strong>Dear NEW Users</strong>: Please register by clicking the blue "Join" button above.</p>
+            <p><strong>Dear Registered Users</strong>: To log in, use your username and password, and click the green "sign in" button.</p>
+            <p><strong>Regarding passwords</strong>: Please create a new unique password for this site. <strong><em><span style="color: red;">Please do not use your regular SVSU password.</span><em></strong> If you forgot your password, to RE-SET your password for this site email "re-set password" to: Tyler O'lear, tmolear@svsu.edu.</p>
+
+            <br />
+
+
+            <footer>
+                <small>&copy; Copyright 2017, Tyler O'Lear
+                </small>
+            </footer>
+
+        </form>
+
+
+    </div> <!-- end div: class="span10 offset1" -->
+
+</div> <!-- end div: class="container" -->
+
+</body>
+
 </html>

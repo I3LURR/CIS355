@@ -1,5 +1,12 @@
 <?php
 
+session_start();
+if(!isset($_SESSION["person_id"])){ // if "user" not set,
+    session_destroy();
+    header('Location: index.php');     // go to login page
+    exit;
+}
+
 require 'database.php';
 
 //Gets ID from index.php button call, since its set to null should always call _Get ID, need to use POST

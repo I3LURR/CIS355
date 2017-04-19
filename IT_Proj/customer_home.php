@@ -183,7 +183,7 @@
 					  </div>
 					  <div class="form-actions">
 						  <button type="submit" class="btn btn-success">Create</button>
-						  <a class="btn" href="employee_home.php?id=gpcorser">Back</a>
+						  <a class="btn" href="employee_home.php">Back</a>
 						</div>
 					</form>
 				</div>

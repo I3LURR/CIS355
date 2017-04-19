@@ -1,5 +1,12 @@
-<?php 
-	
+<?php
+
+session_start();
+if(!isset($_SESSION["person_id"])){ // if "user" not set,
+    session_destroy();
+    header('Location: index.php');     // go to login page
+    exit;
+}
+
 	require 'database.php';
 
 	if ( !empty($_POST)) {

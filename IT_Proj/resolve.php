@@ -1,4 +1,11 @@
-<?php 
+<?php
+
+session_start();
+if(!isset($_SESSION["person_id"])){ // if "user" not set,
+    session_destroy();
+    header('Location: index.php');     // go to login page
+    exit;
+}
 	require 'database.php';
 	$probId = 0;
 	$user = "";
@@ -29,11 +36,11 @@
 			$data = $q->fetch(PDO::FETCH_ASSOC);
 			$pdo = Database::disconnect();
 			//should be successful if nothing failed at this point
-			header("Location: http://csis.svsu.edu/~tmolear/CIS355/IT_Proj/employee_home.php?id=". $user);
+			header("Location: employee_home.php?id=". $user);
 		} catch (PDOException $e) {
 			//There was an issue in resolving the problem
 			//NOTE: Later I need to send an error to the other page to display
-			header("Location: http://csis.svsu.edu/~tmolear/CIS355/IT_Proj/employee_home.php?id=". $user);
+			header("Location: employee_home.php?id=". $user);
 			$blnConnectionSuccess = False;
 		}
 	}
